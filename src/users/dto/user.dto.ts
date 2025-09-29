@@ -6,4 +6,10 @@ export class UserDto {
 
   @Expose()
   username: string;
+
+  @Expose()
+  role: string;
+
+  @Expose()
+  isActive: boolean;
 }

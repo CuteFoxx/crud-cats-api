@@ -2,6 +2,13 @@ import { Injectable, UseInterceptors } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { Role } from './enums/Role';
+
+export interface JwtPayload {
+  username: string;
+  sub: string;
+  role: Role;
+}
 
 @Injectable()
 export class AuthService {
@@ -21,7 +28,11 @@ export class AuthService {
   }
 
   login(user: Partial<User>) {
-    const payload = { username: user.username, sub: user.id };
+    const payload = {
+      username: user.username,
+      sub: user.id,
+      role: user.role,
+    } as Partial<JwtPayload>;
     return {
       access_token: this.jwtService.sign(payload),
     };

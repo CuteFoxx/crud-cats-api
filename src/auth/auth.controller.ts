@@ -6,6 +6,8 @@ import {
   Bind,
   Body,
   Get,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { Request as ReqType } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
@@ -13,6 +15,7 @@ import { UsersService } from 'src/users/users.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { UserDto } from 'src/users/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -37,8 +40,15 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get('profile')
-  getProfile(@Request() req: ReqType) {
-    return req.user;
+  async getProfile(
+    @Request() req: { user: { id: string; username: string } },
+  ): Promise<UserDto | null> {
+    const user = await this.usersService.findOne(req.user.username);
+    if (!user) {
+      return null;
+    }
+    return user;
   }
 }
