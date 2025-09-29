@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      # - node_modules:/usr/src/app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: npm run start:dev
+    ports:
+      - '${PORT}:${PORT}'
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '${DB_PORT}:5432'
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - '${REDIS_PORT}:${REDIS_PORT}'
+volumes:
+  node_modules:
+  postgres_data:
