@@ -29,6 +29,13 @@ export class UsersService implements Ownable {
     return await this.userRepository.findOneBy({ username });
   }
 
+  async findOneById(id: string): Promise<User | null> {
+    if (!id) {
+      throw new NotFoundException('User ID must be provided');
+    }
+    return await this.userRepository.findOneBy({ id: parseInt(id) });
+  }
+
   create(data: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(data);
     return this.userRepository.save(user);

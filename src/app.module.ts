@@ -4,11 +4,12 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
-import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
+import { CatsModule } from './cats/cats.module';
+import { Cat } from './cats/cat.entity';
+import { FilesModule } from './files/files.module';
+import { File } from './files/file.entity';
 
 @Module({
   imports: [
@@ -24,13 +25,15 @@ import { User } from './users/user.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User],
+        entities: [User, Cat, File],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
     UsersModule,
     AuthModule,
+    CatsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

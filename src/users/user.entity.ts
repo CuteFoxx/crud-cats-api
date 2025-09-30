@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { Role } from 'src/auth/enums/Role';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Cat } from 'src/cats/cat.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -23,4 +24,7 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany((type) => Cat, (cat) => cat.author)
+  cat: Cat[];
 }
