@@ -1,6 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
 export class File {
   @PrimaryGeneratedColumn()
   id: number;
@@ -15,5 +14,5 @@ export class File {
   mimetype: string;
 
   @Column()
-  created: Date;
+  Created: Date;
 }

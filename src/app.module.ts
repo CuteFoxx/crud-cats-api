@@ -10,8 +10,6 @@ import { CatsModule } from './cats/cats.module';
 import { Cat } from './cats/cat.entity';
 import { FilesModule } from './files/files.module';
 import { File } from './files/file.entity';
-import { join } from 'path';
-import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -36,19 +34,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     AuthModule,
     CatsModule,
     FilesModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'static'),
-      serveRoot: '/static',
-      serveStaticOptions: {
-        index: false,
-      },
-    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor() {
-    console.log(__dirname);
-  }
-}
+export class AppModule {}
