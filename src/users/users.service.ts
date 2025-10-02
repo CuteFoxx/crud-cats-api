@@ -11,11 +11,11 @@ export class UsersService implements Ownable {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
-  async getOwnerId(id: string): Promise<string> {
+  async getOwnerId(id: string): Promise<number> {
     /**
      *  Just to satisfy the Ownable interface
      */
-    return Promise.resolve(id);
+    return Promise.resolve(parseInt(id));
   }
 
   async find(): Promise<User[]> {

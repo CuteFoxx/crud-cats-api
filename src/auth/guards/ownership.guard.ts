@@ -43,7 +43,6 @@ export class OwnershipGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<PayloadRequest>();
     const userId = request.user.sub;
     const entityId = request.params.id;
-
     if (request.user.role == Role.Admin) {
       return true;
     }
@@ -57,7 +56,7 @@ export class OwnershipGuard implements CanActivate {
       throw new ForbiddenException('OwnerId not found');
     }
 
-    if (ownerId !== userId) {
+    if (ownerId !== parseInt(userId)) {
       throw new ForbiddenException('You are not the owner');
     }
 
