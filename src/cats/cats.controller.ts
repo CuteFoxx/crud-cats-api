@@ -23,7 +23,10 @@ import { OwnershipGuard } from 'src/auth/guards/ownership.guard';
 import { CheckOwnership } from 'src/auth/decorators/ownership';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { File } from 'src/files/file.entity';
+import { Serialize } from 'src/decorators/seralize.decorator';
+import { CatDto } from './dto/cat.dto';
 
+@Serialize(CatDto)
 @Controller('cats')
 export class CatsController {
   constructor(

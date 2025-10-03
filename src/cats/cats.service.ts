@@ -6,7 +6,6 @@ import { CreateCatDto } from './dto/create-cat.dto';
 import { File } from 'src/files/file.entity';
 import { Ownable } from 'src/interfaces/Ownable';
 import { UpdateCatDto } from './dto/update-cat.dto';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CatsService implements Ownable {
@@ -83,6 +82,7 @@ export class CatsService implements Ownable {
     }
 
     const filtered = Object.fromEntries(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.entries(data).filter(([_, v]) => v !== undefined),
     ) as Partial<Cat>;
 

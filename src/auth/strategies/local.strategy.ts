@@ -22,6 +22,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
+    // Blocked users shouldnt be able to log in
+    if (!user.isActive) {
+      throw new UnauthorizedException('The user is blocked');
+    }
     return user;
   }
 }

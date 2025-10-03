@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ownable } from 'src/interfaces/Ownable';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserFullDto } from './dto/update-user-full.dto';
 
 @Injectable()
 export class UsersService implements Ownable {
@@ -54,7 +55,10 @@ export class UsersService implements Ownable {
     return this.userRepository.remove(user);
   }
 
-  async update(id: string, user: UpdateUserDto): Promise<User> {
+  async update(
+    id: string,
+    user: UpdateUserDto | UpdateUserFullDto,
+  ): Promise<User> {
     if (!id) {
       throw new NotFoundException('User ID must be provided for update');
     }
@@ -67,7 +71,12 @@ export class UsersService implements Ownable {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    const updatedUser = Object.assign(existingUser, user);
+    const filtered = Object.fromEntries(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      Object.entries(user).filter(([_, v]) => v !== undefined),
+    ) as Partial<User>;
+
+    const updatedUser = Object.assign(existingUser, filtered);
     return this.userRepository.save(updatedUser);
   }
 }
