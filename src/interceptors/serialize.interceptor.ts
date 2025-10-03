@@ -13,7 +13,7 @@ export class SerializeInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     return next.handle().pipe(
-      map((data: any) => {
+      map((data: SerializeClassConstructor) => {
         return plainToClass(this.dto, data, {
           excludeExtraneousValues: true,
         });

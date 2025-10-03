@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UploadedFile,
   UseGuards,
@@ -25,6 +26,7 @@ import { UpdateCatDto } from './dto/update-cat.dto';
 import { File } from 'src/files/file.entity';
 import { Serialize } from 'src/decorators/seralize.decorator';
 import { CatDto } from './dto/cat.dto';
+import { PaginationDto } from 'src/dto/pagination.dto';
 
 @Serialize(CatDto)
 @Controller('cats')
@@ -35,8 +37,8 @@ export class CatsController {
   ) {}
 
   @Get()
-  async getCats() {
-    return await this.catsService.find();
+  async getCats(@Query() paginationDto: PaginationDto) {
+    return await this.catsService.find(paginationDto);
   }
 
   @Get(':id')
@@ -49,6 +51,7 @@ export class CatsController {
     return cat;
   }
 
+  @Serialize(CatDto)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   @Post()
@@ -70,6 +73,7 @@ export class CatsController {
     );
   }
 
+  @Serialize(CatDto)
   @UseGuards(JwtAuthGuard, OwnershipGuard)
   @CheckOwnership(CatsService, 'id')
   @Delete(':id')
@@ -77,6 +81,7 @@ export class CatsController {
     return await this.catsService.delete(id);
   }
 
+  @Serialize(CatDto)
   @UseGuards(JwtAuthGuard, OwnershipGuard)
   @CheckOwnership(CatsService, 'id')
   @UseInterceptors(FileInterceptor('file'))

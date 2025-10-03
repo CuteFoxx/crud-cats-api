@@ -47,8 +47,4 @@ import { ServeStaticModule } from '@nestjs/serve-static';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor() {
-    console.log(__dirname);
-  }
-}
+export class AppModule {}

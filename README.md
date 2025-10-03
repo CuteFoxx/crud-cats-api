@@ -5,3 +5,4 @@
 - users can post and edit their own cat posts
 - admins can edit all posts and delete
 - full CRUD support for every entity
+- Routes with collections of data implements pagination

@@ -6,11 +6,14 @@ import { CreateCatDto } from './dto/create-cat.dto';
 import { File } from 'src/files/file.entity';
 import { Ownable } from 'src/interfaces/Ownable';
 import { UpdateCatDto } from './dto/update-cat.dto';
+import { PaginationDto } from 'src/dto/pagination.dto';
+import { CatDto } from './dto/cat.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CatsService implements Ownable {
   constructor(
-    @InjectRepository(Cat) private readonly catRepositore: Repository<Cat>,
+    @InjectRepository(Cat) private readonly catRepository: Repository<Cat>,
   ) {}
   async getOwnerId(id: string): Promise<number | null> {
     const cat = await this.findOne(id);
@@ -22,12 +25,22 @@ export class CatsService implements Ownable {
     return cat.author?.id;
   }
 
-  async find() {
-    return await this.catRepositore.find({
-      relations: {
-        author: true,
-      },
+  async find(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto;
+
+    const [cats, total] = await this.catRepository.findAndCount({
+      take: limit,
+      skip: offset,
+      relations: ['author'],
     });
+
+    return {
+      data: plainToInstance(CatDto, cats, { excludeExtraneousValues: true }),
+      total: total,
+      limit,
+      offset,
+      nextPage: total > offset + limit ? offset + limit : null,
+    };
   }
 
   async findOne(id: string): Promise<Cat | null> {
@@ -35,7 +48,7 @@ export class CatsService implements Ownable {
       throw new NotFoundException('Id isnt provided');
     }
 
-    return await this.catRepositore.findOne({
+    return await this.catRepository.findOne({
       relations: {
         author: true,
       },
@@ -49,7 +62,7 @@ export class CatsService implements Ownable {
     }
 
     const { authorId, ...catData } = { ...data };
-    const cat = this.catRepositore.create({
+    const cat = this.catRepository.create({
       ...catData,
       author: {
         id: authorId,
@@ -57,7 +70,7 @@ export class CatsService implements Ownable {
       imageUrl: file.path,
     });
 
-    return await this.catRepositore.save(cat);
+    return await this.catRepository.save(cat);
   }
 
   async delete(id: string) {
@@ -65,13 +78,13 @@ export class CatsService implements Ownable {
       throw new NotFoundException('Id isnt provided');
     }
 
-    const cat = await this.catRepositore.findOneBy({ id: parseInt(id) });
+    const cat = await this.catRepository.findOneBy({ id: parseInt(id) });
 
     if (!cat) {
       throw new NotFoundException('Cat with this id not found');
     }
 
-    return this.catRepositore.remove(cat);
+    return this.catRepository.remove(cat);
   }
 
   async update(id: string, data: UpdateCatDto, file: File | null) {
@@ -92,6 +105,6 @@ export class CatsService implements Ownable {
       cat.imageUrl = file.path;
     }
 
-    return await this.catRepositore.save(cat);
+    return await this.catRepository.save(cat);
   }
 }

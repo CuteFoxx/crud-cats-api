@@ -6,6 +6,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Ownable } from 'src/interfaces/Ownable';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserFullDto } from './dto/update-user-full.dto';
+import { UserDto } from './dto/user.dto';
+import { plainToInstance } from 'class-transformer';
+import { PaginationDto } from 'src/dto/pagination.dto';
 
 @Injectable()
 export class UsersService implements Ownable {
@@ -19,8 +22,21 @@ export class UsersService implements Ownable {
     return Promise.resolve(parseInt(id));
   }
 
-  async find(): Promise<User[]> {
-    return await this.userRepository.find();
+  async find(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto;
+
+    const [users, total] = await this.userRepository.findAndCount({
+      take: limit,
+      skip: offset,
+    });
+
+    return {
+      data: plainToInstance(UserDto, users, { excludeExtraneousValues: true }),
+      total: total,
+      limit,
+      offset,
+      nextPage: total > offset + limit ? offset + limit : null,
+    };
   }
 
   async findOne(username: string): Promise<User | null> {
