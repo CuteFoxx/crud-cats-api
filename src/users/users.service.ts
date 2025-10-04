@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -9,7 +13,7 @@ import { UpdateUserFullDto } from './dto/update-user-full.dto';
 import { UserDto } from './dto/user.dto';
 import { plainToInstance } from 'class-transformer';
 import { PaginationDto } from 'src/dto/pagination.dto';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService implements Ownable {
   constructor(
@@ -53,8 +57,22 @@ export class UsersService implements Ownable {
     return await this.userRepository.findOneBy({ id: parseInt(id) });
   }
 
-  create(data: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(data);
+  async create(data: CreateUserDto): Promise<User> {
+    const { password, username, ...rest } = data;
+
+    const userExists = await this.findOne(username);
+
+    if (userExists) {
+      throw new ConflictException('User already exists');
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+
+    const user = this.userRepository.create({
+      ...rest,
+      username,
+      password: hash,
+    });
     return this.userRepository.save(user);
   }
 

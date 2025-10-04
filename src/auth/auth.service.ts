@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Role } from './enums/Role';
+import * as bcrypt from 'bcrypt';
 
 export interface JwtPayload {
   username: string;
@@ -20,7 +21,9 @@ export class AuthService {
   @UseInterceptors()
   async validateUser(username: string, password: string) {
     const user = await this.usersService.findOne(username);
-    if (user && user.password === password) {
+
+    const isMatch = await bcrypt.compare(password, user?.password ?? '');
+    if (user && isMatch) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
